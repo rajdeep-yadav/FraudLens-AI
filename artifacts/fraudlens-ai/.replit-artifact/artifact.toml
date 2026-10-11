@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "FraudLens AI"
+description = "An academic fraud detection and investigation workspace with transaction risk analysis, alerts, cases, analytics, and audit history."
+version = "1.0.0"
+id = "artifacts/fraudlens-ai"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 21542
+
+[services.development]
+run = "pnpm --filter @workspace/fraudlens-ai run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/fraudlens-ai", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/fraudlens-ai/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "21542"
+BASE_PATH = "/"

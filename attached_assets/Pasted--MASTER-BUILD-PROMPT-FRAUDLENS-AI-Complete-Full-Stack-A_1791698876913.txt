@@ -1,0 +1,975 @@
+# MASTER BUILD PROMPT — FRAUDLENS AI
+## Complete Full-Stack AI-Powered Fraud Detection System
+
+Act as a senior full-stack engineer, machine learning engineer, database architect, application security engineer, and UI/UX designer.
+
+Build a complete, working, full-stack web application for my academic project:
+
+**Project title: Use of Artificial Intelligence in Fraud Detection System**
+
+The application name is **FraudLens AI**.
+
+This is an academic project that must demonstrate how artificial intelligence can identify suspicious financial transactions, assign risk scores, explain predictions, and support fraud investigations.
+
+I need the ENTIRE APPLICATION, including:
+- Frontend.
+- Backend.
+- Database.
+- Authentication and authorization.
+- REST API.
+- Actual fraud detection logic.
+- A trained machine-learning model where feasible.
+- Transaction processing.
+- Alert management.
+- Investigation workflows.
+- Analytics and reporting.
+- CSV import and export.
+- Audit logging.
+- Dark mode and light mode.
+- Automated tests.
+- Documentation.
+- A working Replit configuration.
+
+**Do not build a static website, frontend-only prototype, or dashboard full of hardcoded data. Build the real application, connect all layers, run it, and fix the errors.**
+
+You are authorized to choose the best compatible technology stack. Prioritize a working, maintainable application over unnecessary complexity.
+
+---
+
+# PART 1 — FRONTEND DESIGN SPECIFICATION
+
+I will provide a detailed Greptile-inspired frontend design specification.
+
+Treat that specification as the source of truth for the visual design.
+
+Reproduce its design language, not its branding, content, or proprietary assets.
+
+## Design requirements
+
+Use:
+- Page background: `#e9e9e9`.
+- Primary text: `#3d3b4f`.
+- Alternate surfaces: `#3d3b4f`.
+- Light surfaces: `#f0f0f0`.
+- Muted grey: `#c0c0c0`.
+- Secondary grey: `#909090`.
+- Muted text: `#606078`.
+- Restrained green signal: `#30f0a8`.
+- Light text on dark surfaces: `#eeeeee`.
+
+Typography:
+- Headings: Anybody, with Inter as a fallback.
+- Body and technical data: Space Mono, with JetBrains Mono as a fallback.
+- Maximum two primary font families.
+- Oversized headings for major page introductions.
+- Compact, readable typography for transaction tables and metadata.
+- Uppercase monospace labels for technical sections.
+
+Visual style:
+- Developer-first, terminal-inspired, minimal, and professional.
+- Generous whitespace around headings.
+- Thin borders instead of drop shadows.
+- Restrained color usage.
+- Structured tables and operational dashboards.
+- No excessive gradients, neon glows, glassmorphism, emoji icons, or generic AI landing-page aesthetics.
+- No decorative elements that interfere with financial information.
+- Fully responsive design.
+- Accessible hover and keyboard focus states.
+- Complete dark and light themes.
+
+Use a consistent 8px-based spacing system and a content width of approximately 1310px where appropriate.
+
+The application should resemble a genuine financial security operations product.
+
+Do not turn every application page into a marketing landing page. Operational screens should prioritize data density, usability, and speed.
+
+Use React, Tailwind CSS, and reusable components if appropriate for the selected stack.
+
+Implement the actual application pages listed below, using the same visual design language throughout.
+
+---
+
+# PART 2 — TECHNOLOGY STACK AND ARCHITECTURE
+
+Choose a stack that Replit can run reliably.
+
+Preferred architecture:
+
+**Frontend**
+- React.
+- TypeScript or JavaScript.
+- Vite.
+- Tailwind CSS.
+- Recharts for charts.
+- Lucide icons.
+- React Router for navigation.
+
+**Backend**
+- Node.js.
+- Express.
+- TypeScript or JavaScript.
+- REST API.
+- Zod or an equivalent validation library.
+
+**Database**
+- PostgreSQL using Replit-supported persistent database infrastructure.
+- Drizzle ORM or Prisma.
+- Database migrations and seed scripts.
+
+**Machine learning**
+- Python with scikit-learn for a trained fraud classification model, if reliably supported.
+- A documented Node.js rule-based fallback if the ML service is unavailable.
+- A clearly defined interface between the backend and prediction engine.
+
+You may choose an alternative stack when it materially improves reliability.
+
+Keep the application deployable in the Replit environment. Avoid dependencies that require unsupported infrastructure or paid third-party services.
+
+The frontend must communicate with the backend through real HTTP API endpoints. All sensitive operations and fraud scoring must be handled on the server.
+
+Suggested architecture:
+
+1. React frontend.
+2. Express API server.
+3. PostgreSQL database.
+4. Fraud detection service.
+5. Model training and evaluation pipeline.
+6. Authentication and authorization middleware.
+7. Reporting and data import/export services.
+
+Keep the code modular, with separate folders for routes, controllers, services, validation, database access, frontend components, and tests.
+
+Do not duplicate business logic between the frontend and backend.
+
+---
+
+# PART 3 — DATABASE DESIGN
+
+Create a real, persistent relational database.
+
+Design appropriate tables for the following entities.
+
+## 3.1 Users
+
+Fields:
+- ID.
+- Name.
+- Email.
+- Password hash.
+- Role.
+- Account status.
+- Created timestamp.
+- Updated timestamp.
+
+Roles:
+- Administrator.
+- Fraud Analyst.
+- Viewer.
+
+Enforce permissions on the backend.
+
+## 3.2 Transactions
+
+Fields:
+- Unique transaction ID.
+- Customer ID.
+- Transaction timestamp.
+- Amount.
+- Currency.
+- Merchant name.
+- Merchant category.
+- Payment method.
+- Transaction location, if available.
+- Device identifier, if available.
+- IP metadata, if available.
+- Transaction frequency features, if available.
+- Model prediction.
+- Risk score.
+- Risk classification.
+- Review status.
+- Final outcome, when known.
+- Creation and update timestamps.
+
+Use suitable indexes for transaction IDs, timestamps, risk levels, and commonly queried fields.
+
+## 3.3 Fraud Predictions
+
+Store prediction records separately from transaction records.
+
+Fields:
+- Prediction ID.
+- Transaction ID.
+- Model or rules-engine version.
+- Fraud probability, when provided by a calibrated classifier.
+- Risk score.
+- Risk classification.
+- Contributing features or rules.
+- Recommended action.
+- Prediction timestamp.
+
+Preserve prediction history so the application can distinguish an original prediction from a later human decision.
+
+## 3.4 Alerts
+
+Fields:
+- Alert ID.
+- Transaction ID.
+- Prediction ID.
+- Severity.
+- Trigger reason.
+- Assigned analyst.
+- Status.
+- Created timestamp.
+- Updated timestamp.
+- Resolution notes.
+
+## 3.5 Investigations
+
+Fields:
+- Investigation ID.
+- Associated transaction.
+- Related alerts.
+- Assigned investigator.
+- Priority.
+- Status.
+- Resolution outcome.
+- Opened timestamp.
+- Closed timestamp.
+
+## 3.6 Investigation Notes
+
+Fields:
+- Note ID.
+- Investigation ID.
+- Author ID.
+- Note content.
+- Created timestamp.
+
+Notes should be append-only for ordinary users unless an explicitly authorized correction workflow is implemented.
+
+## 3.7 Audit Logs
+
+Fields:
+- Log ID.
+- Actor ID, when available.
+- Action.
+- Entity type.
+- Entity ID.
+- Timestamp.
+- Relevant metadata.
+
+Log important changes to transactions, predictions, alerts, investigations, settings, and user permissions.
+
+## 3.8 Application Settings
+
+Store configurable detection thresholds and application preferences where appropriate.
+
+Use database migrations and a repeatable seed process. Do not depend on temporary in-memory arrays or browser localStorage for primary application data.
+
+Verify that records survive application restarts.
+
+---
+
+# PART 4 — AUTHENTICATION AND SECURITY
+
+Implement real authentication.
+
+Required functionality:
+- Login.
+- Logout.
+- Controlled account creation or registration.
+- Password hashing using Argon2 or bcrypt.
+- Secure session handling or appropriately implemented token authentication.
+- Protected frontend routes.
+- Server-side authorization middleware.
+- Role-based permissions.
+- Input validation.
+- Rate limiting on sensitive endpoints.
+- Safe error handling.
+- Secure cookie settings if sessions are used.
+- CSRF protection where required by the authentication architecture.
+- Parameterized database access.
+- Secrets stored in environment variables.
+
+Never store plaintext passwords.
+
+Never expose database credentials, signing secrets, model administration controls, or API secrets to the browser.
+
+Provide a documented demo-account setup for the examination. Create demo accounts through a seed script or a controlled setup process, with credentials provided in the README or Replit Secrets as appropriate.
+
+Do not embed reusable production credentials in frontend code.
+
+Example permissions:
+
+Administrator:
+- Manage authorized users.
+- Access all permitted application data.
+- Change model thresholds.
+- Manage system settings.
+- Reset demo data.
+
+Fraud Analyst:
+- Analyze transactions.
+- Review alerts.
+- Open and manage investigations.
+- Add investigation notes.
+- Export permitted reports.
+
+Viewer:
+- View authorized dashboards, transactions, alerts, and reports.
+- Cannot modify records or change settings.
+
+Enforce all permissions on the server. Hiding a button in React is not authorization.
+
+---
+
+# PART 5 — REAL AI FRAUD DETECTION ENGINE
+
+This is the core of the project.
+
+Implement a real fraud detection pipeline that accepts transaction data and returns a prediction or risk assessment.
+
+Do not pretend that a machine-learning model exists when the application only uses manually written rules.
+
+## 5.1 Preferred machine-learning implementation
+
+Use a suitable labeled fraud dataset, preferably a publicly available anonymized financial transaction dataset.
+
+If downloading data is not possible, create a synthetic dataset with explicitly documented generation assumptions.
+
+Train a classification model using scikit-learn. Start with logistic regression or random forest and compare against an appropriate baseline when feasible.
+
+The pipeline must include:
+1. Data loading.
+2. Schema and data validation.
+3. Feature preparation.
+4. Training and test separation.
+5. Class imbalance handling.
+6. Model training.
+7. Model persistence.
+8. Prediction.
+9. Evaluation.
+10. Version identification.
+
+Avoid data leakage. Split data before fitting preprocessing transformations and before any resampling operation.
+
+Where possible, use stratified splitting or time-based splitting appropriate to the dataset.
+
+Evaluate using:
+- Precision.
+- Recall.
+- F1-score.
+- ROC-AUC.
+- Precision-recall AUC for highly imbalanced data.
+- Confusion matrix.
+
+Explain why accuracy alone is insufficient when fraud is rare.
+
+Do not fabricate evaluation results. Calculate all displayed metrics from actual test predictions.
+
+Only display a probability as a probability when the model produces an appropriate probability estimate. If calibration has not been assessed, document that limitation.
+
+## 5.2 Prediction features
+
+Use only features supported by the dataset or supplied transaction context.
+
+Potential features include:
+- Transaction amount.
+- Time of transaction.
+- Merchant category.
+- Payment method.
+- Transaction frequency over a defined window.
+- Deviation from known customer behavior.
+- Device novelty.
+- Geographic inconsistency.
+- Failed-attempt count.
+
+Do not invent customer history, device reputation, transaction frequency, or geographic distance when the necessary data is unavailable.
+
+Create a feature preparation pipeline that ensures the same transformations are used during training and inference.
+
+## 5.3 Explainable predictions
+
+Every prediction should return:
+- Risk score.
+- Risk category.
+- Model version.
+- Contributing features or triggered rules.
+- Recommended action.
+- A clear explanation of the result.
+
+Use genuine feature attribution where feasible. For a simpler model, explain actual model coefficients or feature importance with appropriate caveats.
+
+For rule-based fallback predictions, return the exact rules that triggered.
+
+Do not fabricate SHAP explanations or claim that a feature caused fraud when the model only identified an association.
+
+## 5.4 Rule-based fallback
+
+The application must remain usable if the machine-learning runtime cannot start.
+
+Implement a separate, modular rule-based scoring engine.
+
+Possible rules:
+- Unusually large transaction amount.
+- Rapid transactions within a defined time window.
+- Repeated failed attempts.
+- Unusual location compared with known history.
+- New device.
+- Unusual merchant category.
+
+Only execute rules for which the necessary information exists.
+
+Use configurable weights and thresholds. Document the formula and the limitations.
+
+Label the output clearly as rule-based risk scoring.
+
+## 5.5 Risk classification
+
+Create configurable risk categories such as:
+- Low.
+- Medium.
+- High.
+- Critical.
+
+Store thresholds in the backend configuration or database.
+
+Ensure threshold changes affect future predictions.
+
+Distinguish these concepts:
+- Risk score.
+- Predicted fraud probability.
+- Human-confirmed fraud.
+- Investigation outcome.
+
+They must never be treated as equivalent.
+
+## 5.6 Human oversight
+
+A high-risk prediction should create a review recommendation, not automatically declare the customer guilty or permanently block a transaction.
+
+Provide an analyst workflow to record whether a transaction is:
+- Pending review.
+- Confirmed fraud.
+- Legitimate.
+- Inconclusive.
+
+Preserve the original model prediction even after the analyst changes the final outcome.
+
+---
+
+# PART 6 — BACKEND API
+
+Create and test real REST endpoints.
+
+Use consistent response formats, validation, authorization, pagination, and error handling.
+
+Suggested endpoint groups:
+
+## Authentication
+- `POST /api/auth/login`
+- `POST /api/auth/logout`
+- `GET /api/auth/me`
+- `POST /api/auth/register` when registration is enabled.
+
+## Transactions
+- `GET /api/transactions`
+- `GET /api/transactions/:id`
+- `POST /api/transactions`
+- `PATCH /api/transactions/:id/status`
+- `POST /api/transactions/:id/analyze`
+
+## Fraud detection
+- `POST /api/detection/analyze`
+- `GET /api/detection/predictions`
+- `GET /api/detection/predictions/:id`
+
+## Alerts
+- `GET /api/alerts`
+- `GET /api/alerts/:id`
+- `PATCH /api/alerts/:id`
+- `POST /api/alerts/:id/assign`
+- `POST /api/alerts/:id/resolve`
+
+## Investigations
+- `GET /api/investigations`
+- `POST /api/investigations`
+- `GET /api/investigations/:id`
+- `PATCH /api/investigations/:id`
+- `POST /api/investigations/:id/notes`
+
+## Analytics
+- `GET /api/analytics/overview`
+- `GET /api/analytics/trends`
+- `GET /api/analytics/distribution`
+- `GET /api/analytics/model-performance`
+
+## Data import and export
+- `POST /api/import/csv`
+- `GET /api/import/:id`
+- `GET /api/export/transactions`
+- `GET /api/export/report`
+
+## Administration
+- `GET /api/admin/users`
+- `PATCH /api/admin/users/:id`
+- `GET /api/admin/settings`
+- `PATCH /api/admin/settings`
+- `GET /api/audit-logs`
+
+Adapt endpoint names where necessary, but preserve the underlying functionality.
+
+Every endpoint must:
+- Validate input.
+- Enforce authentication and permissions.
+- Return appropriate HTTP status codes.
+- Handle missing records.
+- Handle invalid data.
+- Avoid leaking sensitive implementation details.
+- Be tested for important success and failure cases.
+
+Never return fake success responses.
+
+---
+
+# PART 7 — FRONTEND APPLICATION PAGES
+
+Build all of the following pages and connect them to the backend.
+
+## 7.1 Overview Dashboard
+
+Display:
+- Total transactions.
+- Flagged transactions.
+- Confirmed fraud cases.
+- Estimated fraud value.
+- Transactions awaiting review.
+- Fraud trends.
+- Transaction risk distribution.
+- Merchant category breakdown.
+- Recent alerts.
+- Recent transactions.
+
+Provide date-range filters.
+
+All values and charts must be calculated from real stored records or clearly identified synthetic demonstration data.
+
+Do not hardcode metrics into the interface.
+
+## 7.2 Transaction Monitoring
+
+Provide:
+- Search.
+- Sorting.
+- Pagination.
+- Date filters.
+- Risk filters.
+- Amount filters.
+- Merchant category filters.
+- Transaction detail view.
+- Prediction history.
+- Status updates.
+- Investigator notes or links to associated cases.
+
+The page must work with actual database records.
+
+## 7.3 Detection Lab
+
+Create an interactive transaction analysis form.
+
+Users can enter the available transaction fields and submit them to the backend.
+
+After submission, display:
+- Risk score.
+- Fraud probability, when available.
+- Risk category.
+- Model type and version.
+- Triggered rules or contributing features.
+- Recommended action.
+
+Save the transaction and prediction in the database.
+
+Provide selectable synthetic test scenarios:
+- Normal low-value purchase.
+- Unusually large transaction.
+- Rapid transaction sequence.
+- Unusual location when historical context is supplied.
+
+Demonstrate that different inputs can produce different outputs. Do not artificially force a particular prediction for a scenario.
+
+## 7.4 Fraud Alerts
+
+Display alerts generated by the backend.
+
+Allow authorized users to:
+- Acknowledge alerts.
+- Assign investigators.
+- Change severity where permitted.
+- Escalate cases.
+- Resolve alerts.
+- Add resolution notes.
+
+Prevent duplicate alert creation when an existing unresolved alert already represents the same event and trigger.
+
+## 7.5 Investigation Center
+
+Provide:
+- Case list.
+- Case details.
+- Assigned investigator.
+- Priority.
+- Related transactions.
+- Related alerts.
+- Chronological timeline.
+- Investigation notes.
+- Resolution status.
+- Closure reason.
+
+Persist every update.
+
+## 7.6 Analytics and Reports
+
+Provide:
+- Transaction volume by day, week, and month.
+- Fraud value trends.
+- Risk-level distribution.
+- Merchant category analysis.
+- Alert resolution statistics.
+- Confirmed fraud versus legitimate outcomes.
+- Model evaluation metrics when labeled test data exists.
+
+Allow users to filter reports and export CSV data.
+
+Do not present unverified predictions as confirmed fraud statistics.
+
+## 7.7 AI Model Insights
+
+Explain:
+- How the fraud detection pipeline works.
+- What features are used.
+- Which model is running.
+- How the model was trained.
+- How it was evaluated.
+- Precision, recall, F1-score, and ROC-AUC where available.
+- The confusion matrix.
+- Limitations and potential biases.
+- Why human review is necessary.
+
+Include a system architecture diagram and a transaction-processing flow diagram.
+
+All model statistics must come from the actual training and evaluation pipeline.
+
+## 7.8 Data Import
+
+Implement a real CSV upload workflow.
+
+Features:
+- Upload CSV.
+- Preview rows.
+- Validate columns.
+- Validate numeric fields and timestamps.
+- Detect duplicates.
+- Identify invalid rows.
+- Report accepted and rejected records.
+- Run detection on imported records.
+- Save valid transactions to the database.
+- Provide an import summary.
+- Provide a downloadable CSV template.
+
+Limit file size and row count to reasonable configurable values.
+
+Do not silently discard malformed rows.
+
+## 7.9 Audit Logs
+
+Show:
+- Timestamp.
+- Actor.
+- Action.
+- Entity.
+- Entity ID.
+- Relevant metadata.
+
+Provide filters and pagination.
+
+Audit logs must be created by backend operations, not merely displayed as frontend-generated events.
+
+## 7.10 Settings
+
+Provide appropriate settings for:
+- Theme.
+- Risk thresholds.
+- Alert generation.
+- Table preferences.
+- Notification preferences.
+- Demo data reset.
+- User management for administrators.
+
+Persist application settings when they are intended to be global.
+
+Use local browser storage only for appropriate client preferences, such as the selected theme, not as the main application database.
+
+---
+
+# PART 8 — DATABASE SEEDING AND DEMO MODE
+
+The application must be usable immediately after setup.
+
+Create a deterministic seed script that generates realistic synthetic data.
+
+Include:
+- Multiple users with different roles.
+- Hundreds of synthetic transactions.
+- A range of transaction amounts and categories.
+- Both ordinary and suspicious examples.
+- Fraud predictions.
+- Alerts.
+- Investigations.
+- Notes.
+- Audit log entries.
+
+Make sure the records have consistent relationships and timestamps.
+
+Mark synthetic data clearly in the interface and documentation.
+
+Create enough data to demonstrate charts, pagination, search, and filtering.
+
+Provide an authorized reset function that restores the initial demonstration dataset.
+
+The reset must require confirmation and must never be exposed to unauthorized users.
+
+Ensure the application works even if an external dataset or third-party API is unavailable.
+
+---
+
+# PART 9 — DARK MODE AND LIGHT MODE
+
+Implement the two themes throughout the application.
+
+Light theme:
+- Background `#e9e9e9`.
+- Surfaces `#f0f0f0`.
+- Primary text `#3d3b4f`.
+- Muted text `#606078`.
+- Restrained borders.
+- Minimal shadows.
+
+Dark theme:
+- Charcoal and dark grey surfaces.
+- Readable light text.
+- Muted metadata.
+- The same restrained visual identity.
+- Accessible fraud-status indicators.
+
+Use shared CSS variables or design tokens.
+
+Persist the selected theme across page refreshes.
+
+Apply themes to every page, table, form, dropdown, chart, dialog, and navigation element.
+
+Avoid excessive gradients, glowing elements, glassmorphism, and generic AI visual effects.
+
+Respect reduced-motion preferences and ensure all controls have visible hover and focus states.
+
+---
+
+# PART 10 — REPORTING AND ACADEMIC PRESENTATION
+
+Include an Academic Project page or section containing:
+
+1. Project title.
+2. Problem statement.
+3. Objectives.
+4. Existing system limitations.
+5. Proposed system.
+6. System architecture.
+7. Data flow.
+8. Database design.
+9. AI methodology.
+10. Model training and evaluation.
+11. Security considerations.
+12. Limitations.
+13. Future scope.
+
+Create an exportable report suitable for an examination demonstration.
+
+Include a README explaining:
+- How to run the application.
+- How to configure environment variables.
+- How to initialize the database.
+- How to seed demo data.
+- How to create demo accounts.
+- How the model works.
+- How to train or replace the model.
+- How to run tests.
+- How to use the APIs.
+- Known limitations.
+
+Also create a viva preparation document with likely examiner questions and answers based on the actual implementation.
+
+Do not claim features or results that are not implemented.
+
+---
+
+# PART 11 — SECURITY AND DATA PRIVACY
+
+This is an educational fraud detection prototype, not a production banking system.
+
+Implement:
+- Secure password storage.
+- Role-based authorization.
+- Input validation.
+- Rate limiting.
+- Safe database queries.
+- Secure file upload validation.
+- Appropriate session security.
+- Restricted CSV exports.
+- Error handling.
+- Audit trails.
+- No real banking credentials or payment card data.
+
+Use synthetic or anonymized demonstration data.
+
+Do not expose sensitive information in logs or API responses.
+
+Clearly explain that a fraud prediction is a risk assessment and not definitive proof of wrongdoing.
+
+Do not automatically execute financial transactions or block real accounts.
+
+---
+
+# PART 12 — TESTING AND VERIFICATION
+
+You must run the project and test it, not merely generate files.
+
+Implement automated tests for:
+- Risk scoring.
+- Feature preparation.
+- Model inference.
+- Input validation.
+- Authentication.
+- Authorization.
+- Transaction creation and retrieval.
+- Prediction persistence.
+- Alert generation.
+- Investigation workflows.
+- CSV import validation.
+- Analytics calculations.
+
+Verify the following end-to-end workflows.
+
+### Workflow A: Analyze a transaction
+
+1. Log in.
+2. Open Detection Lab.
+3. Enter transaction details.
+4. Submit the transaction.
+5. Receive a backend prediction.
+6. View the explanation.
+7. Confirm the transaction appears in the transaction table.
+8. Refresh the page and verify persistence.
+
+### Workflow B: Investigate a suspicious transaction
+
+1. Analyze a transaction that triggers the configured detection criteria.
+2. Verify an alert is generated.
+3. Open the alert.
+4. Create an investigation.
+5. Add a note.
+6. Assign an investigator.
+7. Resolve the case.
+8. Verify that the database and audit log reflect the changes.
+
+### Workflow C: Import a dataset
+
+1. Upload a valid CSV.
+2. Preview and validate the records.
+3. Import the records.
+4. Run fraud analysis.
+5. Verify the accepted and rejected row counts.
+6. Confirm dashboard metrics update.
+
+### Workflow D: Check permissions
+
+1. Log in as an administrator.
+2. Verify administrative features.
+3. Log in as a fraud analyst.
+4. Verify analyst workflows.
+5. Log in as a viewer.
+6. Verify that unauthorized modifications are rejected by the backend.
+
+### Workflow E: Theme and responsive design
+
+1. Switch between light and dark modes.
+2. Navigate through all pages.
+3. Refresh and verify theme persistence.
+4. Test desktop, tablet, and mobile layouts.
+
+Fix errors discovered during these tests.
+
+Do not claim that a test passed unless it was actually executed.
+
+---
+
+# PART 13 — REPLIT EXECUTION INSTRUCTIONS
+
+Build the project in this order:
+
+1. Inspect the available Replit environment and select a compatible architecture.
+2. Create the project structure.
+3. Configure the database and migrations.
+4. Implement authentication and authorization.
+5. Implement the transaction and prediction data models.
+6. Build and test the fraud detection engine.
+7. Implement the backend API.
+8. Build the frontend using the supplied visual specification.
+9. Connect all pages to the actual API.
+10. Implement alerts, investigations, analytics, and CSV operations.
+11. Seed synthetic demo data.
+12. Implement both themes.
+13. Add tests and documentation.
+14. Start the application.
+15. Test the main workflows and fix errors.
+
+Use Replit's supported persistent database and secrets features where appropriate.
+
+Configure the Run command and deployment settings for the chosen stack.
+
+Ensure that the server binds to the appropriate host and port for Replit.
+
+Avoid committing secrets or requiring a paid external AI API for the core fraud detection feature.
+
+If an external model service cannot be used, use the locally trained model or documented rule-based fallback.
+
+If any technology or dependency is unavailable, choose an appropriate alternative and document the decision.
+
+Do not stop after producing a plan, scaffold, mockup, or homepage.
+
+Continue until the implemented application runs and the important workflows have been verified.
+
+---
+
+# PART 14 — FINAL ACCEPTANCE CRITERIA
+
+The project is complete only when:
+
+- The frontend and backend run together.
+- The database persists data.
+- Authentication works.
+- Role-based permissions are enforced server-side.
+- The fraud detection engine produces real, explainable results.
+- Model metrics are calculated from actual evaluation data.
+- Transactions can be created, analyzed, searched, filtered, and updated.
+- Alerts are generated and managed correctly.
+- Investigations and notes persist.
+- Analytics reflect real application records.
+- CSV import and export work.
+- Audit logs record important changes.
+- Dark mode and light mode work throughout the application.
+- The design follows the supplied Greptile-inspired specification.
+- All visible controls have working behavior.
+- Critical workflows have been tested.
+- The README matches the actual implementation.
+- The application runs successfully in Replit.
+
+**Final instruction: Build the complete working FraudLens AI application, including frontend, backend, database, AI fraud detection, security, and documentation. Prioritize functional correctness and a polished, original interface. Do not deliver a hollow prototype or declare completion before running and verifying the application.**

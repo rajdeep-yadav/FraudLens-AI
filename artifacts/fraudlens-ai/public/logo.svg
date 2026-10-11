@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 36" fill="none">
+  <rect x="1" y="5" width="26" height="26" rx="5" fill="#2B745B"/>
+  <path d="M14 10.2 21 13v5.2c0 4.1-2.8 6.9-7 8.6-4.2-1.7-7-4.5-7-8.6V13l7-2.8Z" stroke="#F7F5EB" stroke-width="1.8"/>
+  <path d="m11.3 18.2 1.8 1.8 3.7-4" stroke="#F7F5EB" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="35" y="25" fill="#26313C" font-family="DM Sans, sans-serif" font-size="20" font-weight="700" letter-spacing="-1.2">fraud<tspan fill="#2C7B60">lens</tspan></text>
+</svg>

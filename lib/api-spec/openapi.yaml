@@ -3,20 +3,19 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: FraudLens transaction monitoring and investigations API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
-    description: Health operations
+  - name: fraudlens
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,13 +23,548 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /overview:
+    get:
+      operationId: getOverview
+      tags: [fraudlens]
+      summary: Get operational overview
+      responses:
+        "200":
+          description: Overview calculated from persisted transactions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Overview"
+  /transactions:
+    get:
+      operationId: listTransactions
+      tags: [fraudlens]
+      summary: Search and filter transactions
+      parameters:
+        - in: query
+          name: search
+          schema: { type: string }
+        - in: query
+          name: risk
+          schema: { type: string, enum: [low, medium, high, critical] }
+        - in: query
+          name: status
+          schema: { type: string }
+        - in: query
+          name: page
+          schema: { type: integer, minimum: 1, default: 1 }
+        - in: query
+          name: pageSize
+          schema: { type: integer, minimum: 1, maximum: 100, default: 20 }
+      responses:
+        "200":
+          description: Paged transaction list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TransactionPage"
+    post:
+      operationId: createTransaction
+      tags: [fraudlens]
+      summary: Save and analyze a transaction
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/TransactionInput" }
+      responses:
+        "201":
+          description: Transaction and its prediction
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AnalysisResult" }
+  /transactions/{id}:
+    get:
+      operationId: getTransaction
+      tags: [fraudlens]
+      summary: Get a transaction and its prediction history
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: Transaction details
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/TransactionDetail" }
+        "404": { description: Transaction not found }
+  /transactions/{id}/review:
+    patch:
+      operationId: reviewTransaction
+      tags: [fraudlens]
+      summary: Record a human review outcome
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ReviewInput" }
+      responses:
+        "200":
+          description: Reviewed transaction
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Transaction" }
+  /detection/analyze:
+    post:
+      operationId: analyzeTransaction
+      tags: [fraudlens]
+      summary: Score, explain, and save a transaction
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/TransactionInput" }
+      responses:
+        "201":
+          description: Persisted assessment
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AnalysisResult" }
+  /alerts:
+    get:
+      operationId: listAlerts
+      tags: [fraudlens]
+      summary: List generated fraud alerts
+      parameters:
+        - in: query
+          name: status
+          schema: { type: string }
+      responses:
+        "200":
+          description: Generated alerts
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Alert" }
+  /alerts/{id}:
+    patch:
+      operationId: updateAlert
+      tags: [fraudlens]
+      summary: Update alert assignment or resolution
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/AlertUpdate" }
+      responses:
+        "200":
+          description: Updated alert
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Alert" }
+  /investigations:
+    get:
+      operationId: listInvestigations
+      tags: [fraudlens]
+      summary: List investigation cases
+      responses:
+        "200":
+          description: Investigation cases
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Investigation" }
+    post:
+      operationId: createInvestigation
+      tags: [fraudlens]
+      summary: Open a case for a transaction
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/InvestigationInput" }
+      responses:
+        "201":
+          description: New investigation
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Investigation" }
+  /investigations/{id}:
+    get:
+      operationId: getInvestigation
+      tags: [fraudlens]
+      summary: Get case details and notes
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: Case details
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/InvestigationDetail" }
+        "404": { description: Investigation not found }
+    patch:
+      operationId: updateInvestigation
+      tags: [fraudlens]
+      summary: Update case assignment, priority, or status
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/InvestigationUpdate" }
+      responses:
+        "200":
+          description: Updated case
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Investigation" }
+  /investigations/{id}/notes:
+    post:
+      operationId: addInvestigationNote
+      tags: [fraudlens]
+      summary: Add an append-only case note
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/NoteInput" }
+      responses:
+        "201":
+          description: Added note
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/InvestigationNote" }
+  /analytics/trends:
+    get:
+      operationId: getAnalyticsTrends
+      tags: [fraudlens]
+      summary: Get daily transaction volume and reviewed fraud outcomes
+      responses:
+        "200":
+          description: Daily aggregates from stored data
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/TrendPoint" }
+  /audit-logs:
+    get:
+      operationId: listAuditLogs
+      tags: [fraudlens]
+      summary: List backend-generated audit events
+      responses:
+        "200":
+          description: Audit history
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/AuditLog" }
+  /settings:
+    get:
+      operationId: getSettings
+      tags: [fraudlens]
+      summary: Get detection thresholds
+      responses:
+        "200":
+          description: Current thresholds and scoring version
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/DetectionSettings" }
+    put:
+      operationId: updateSettings
+      tags: [fraudlens]
+      summary: Update risk category thresholds
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/SettingsInput" }
+      responses:
+        "200":
+          description: Updated settings
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/DetectionSettings" }
+  /import/transactions:
+    post:
+      operationId: importTransactions
+      tags: [fraudlens]
+      summary: Validate, analyze, and persist CSV-parsed transaction rows
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ImportInput" }
+      responses:
+        "200":
+          description: Import results with accepted and rejected row details
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ImportResult" }
+  /export/transactions:
+    get:
+      operationId: exportTransactions
+      tags: [fraudlens]
+      summary: Export stored transactions as CSV
+      responses:
+        "200":
+          description: CSV file
+          content:
+            text/csv:
+              schema: { type: string }
 components:
   schemas:
     HealthStatus:
       type: object
       properties:
-        status:
-          type: string
-      required:
-        - status
-
+        status: { type: string }
+      required: [status]
+    TransactionInput:
+      type: object
+      required: [amount, currency, merchant, category, paymentMethod, occurredAt]
+      properties:
+        customerId: { type: string }
+        amount: { type: number, minimum: 0.01 }
+        currency: { type: string, minLength: 3, maxLength: 3 }
+        merchant: { type: string, minLength: 1, maxLength: 120 }
+        category: { type: string, minLength: 1, maxLength: 80 }
+        paymentMethod: { type: string, minLength: 1, maxLength: 40 }
+        location: { type: ["string", "null"] }
+        deviceId: { type: ["string", "null"] }
+        occurredAt: { type: string, format: date-time }
+        recentCount: { type: ["integer", "null"], minimum: 0 }
+        failedAttempts: { type: ["integer", "null"], minimum: 0 }
+        newDevice: { type: ["boolean", "null"] }
+        unusualLocation: { type: ["boolean", "null"] }
+    Transaction:
+      type: object
+      required: [id, reference, amount, currency, merchant, category, paymentMethod, occurredAt, riskScore, riskLevel, reviewStatus, createdAt]
+      properties:
+        id: { type: integer }
+        reference: { type: string }
+        customerId: { type: ["string", "null"] }
+        amount: { type: number }
+        currency: { type: string }
+        merchant: { type: string }
+        category: { type: string }
+        paymentMethod: { type: string }
+        location: { type: ["string", "null"] }
+        deviceId: { type: ["string", "null"] }
+        occurredAt: { type: string, format: date-time }
+        riskScore: { type: integer }
+        riskLevel: { type: string, enum: [low, medium, high, critical] }
+        reviewStatus: { type: string, enum: [pending, confirmed_fraud, legitimate, inconclusive] }
+        createdAt: { type: string, format: date-time }
+    Prediction:
+      type: object
+      required: [id, engine, version, riskScore, riskLevel, reasons, recommendedAction, explanation, createdAt]
+      properties:
+        id: { type: integer }
+        engine: { type: string }
+        version: { type: string }
+        riskScore: { type: integer }
+        riskLevel: { type: string, enum: [low, medium, high, critical] }
+        reasons:
+          type: array
+          items: { type: string }
+        recommendedAction: { type: string }
+        explanation: { type: string }
+        createdAt: { type: string, format: date-time }
+    AnalysisResult:
+      type: object
+      required: [transaction, prediction, alertCreated]
+      properties:
+        transaction: { $ref: "#/components/schemas/Transaction" }
+        prediction: { $ref: "#/components/schemas/Prediction" }
+        alertCreated: { type: boolean }
+    TransactionPage:
+      type: object
+      required: [items, page, pageSize, total]
+      properties:
+        items:
+          type: array
+          items: { $ref: "#/components/schemas/Transaction" }
+        page: { type: integer }
+        pageSize: { type: integer }
+        total: { type: integer }
+    TransactionDetail:
+      type: object
+      required: [transaction, predictions]
+      properties:
+        transaction: { $ref: "#/components/schemas/Transaction" }
+        predictions:
+          type: array
+          items: { $ref: "#/components/schemas/Prediction" }
+    ReviewInput:
+      type: object
+      required: [reviewStatus]
+      properties:
+        reviewStatus: { type: string, enum: [pending, confirmed_fraud, legitimate, inconclusive] }
+        note: { type: string, maxLength: 2000 }
+    Overview:
+      type: object
+      required: [totalTransactions, flaggedTransactions, confirmedFraud, estimatedFraudValue, awaitingReview, riskDistribution, recentTransactions, recentAlerts]
+      properties:
+        totalTransactions: { type: integer }
+        flaggedTransactions: { type: integer }
+        confirmedFraud: { type: integer }
+        estimatedFraudValue: { type: number }
+        awaitingReview: { type: integer }
+        riskDistribution:
+          type: array
+          items: { $ref: "#/components/schemas/RiskCount" }
+        recentTransactions:
+          type: array
+          items: { $ref: "#/components/schemas/Transaction" }
+        recentAlerts:
+          type: array
+          items: { $ref: "#/components/schemas/Alert" }
+    RiskCount:
+      type: object
+      required: [riskLevel, count]
+      properties:
+        riskLevel: { type: string }
+        count: { type: integer }
+    Alert:
+      type: object
+      required: [id, transactionId, reference, severity, reason, status, createdAt]
+      properties:
+        id: { type: integer }
+        transactionId: { type: integer }
+        reference: { type: string }
+        severity: { type: string }
+        reason: { type: string }
+        status: { type: string, enum: [open, acknowledged, escalated, resolved] }
+        assignedTo: { type: ["string", "null"] }
+        resolutionNotes: { type: ["string", "null"] }
+        createdAt: { type: string, format: date-time }
+    AlertUpdate:
+      type: object
+      properties:
+        status: { type: string, enum: [open, acknowledged, escalated, resolved] }
+        assignedTo: { type: ["string", "null"] }
+        resolutionNotes: { type: ["string", "null"], maxLength: 2000 }
+    Investigation:
+      type: object
+      required: [id, transactionId, reference, priority, status, openedAt]
+      properties:
+        id: { type: integer }
+        transactionId: { type: integer }
+        reference: { type: string }
+        assignedTo: { type: ["string", "null"] }
+        priority: { type: string, enum: [low, medium, high, critical] }
+        status: { type: string, enum: [open, in_progress, closed] }
+        outcome: { type: ["string", "null"] }
+        openedAt: { type: string, format: date-time }
+        closedAt: { type: ["string", "null"], format: date-time }
+    InvestigationDetail:
+      type: object
+      required: [investigation, notes]
+      properties:
+        investigation: { $ref: "#/components/schemas/Investigation" }
+        notes:
+          type: array
+          items: { $ref: "#/components/schemas/InvestigationNote" }
+    InvestigationInput:
+      type: object
+      required: [transactionId, priority]
+      properties:
+        transactionId: { type: integer }
+        priority: { type: string, enum: [low, medium, high, critical] }
+        assignedTo: { type: string }
+    InvestigationUpdate:
+      type: object
+      properties:
+        assignedTo: { type: ["string", "null"] }
+        priority: { type: string, enum: [low, medium, high, critical] }
+        status: { type: string, enum: [open, in_progress, closed] }
+        outcome: { type: ["string", "null"] }
+    NoteInput:
+      type: object
+      required: [content]
+      properties:
+        content: { type: string, minLength: 1, maxLength: 4000 }
+    InvestigationNote:
+      type: object
+      required: [id, content, author, createdAt]
+      properties:
+        id: { type: integer }
+        content: { type: string }
+        author: { type: string }
+        createdAt: { type: string, format: date-time }
+    TrendPoint:
+      type: object
+      required: [day, volume, flagged, confirmedFraudValue]
+      properties:
+        day: { type: string }
+        volume: { type: integer }
+        flagged: { type: integer }
+        confirmedFraudValue: { type: number }
+    AuditLog:
+      type: object
+      required: [id, action, entityType, entityId, metadata, createdAt]
+      properties:
+        id: { type: integer }
+        actor: { type: ["string", "null"] }
+        action: { type: string }
+        entityType: { type: string }
+        entityId: { type: string }
+        metadata: { type: string }
+        createdAt: { type: string, format: date-time }
+    DetectionSettings:
+      type: object
+      required: [mediumThreshold, highThreshold, criticalThreshold, alertThreshold, scoringVersion]
+      properties:
+        mediumThreshold: { type: integer }
+        highThreshold: { type: integer }
+        criticalThreshold: { type: integer }
+        alertThreshold: { type: integer }
+        scoringVersion: { type: string }
+    SettingsInput:
+      type: object
+      required: [mediumThreshold, highThreshold, criticalThreshold, alertThreshold]
+      properties:
+        mediumThreshold: { type: integer, minimum: 1, maximum: 99 }
+        highThreshold: { type: integer, minimum: 2, maximum: 100 }
+        criticalThreshold: { type: integer, minimum: 3, maximum: 100 }
+        alertThreshold: { type: integer, minimum: 1, maximum: 100 }
+    ImportInput:
+      type: object
+      required: [rows]
+      properties:
+        rows:
+          type: array
+          maxItems: 500
+          items: { $ref: "#/components/schemas/TransactionInput" }
+    ImportResult:
+      type: object
+      required: [accepted, rejected, errors]
+      properties:
+        accepted: { type: integer }
+        rejected: { type: integer }
+        errors:
+          type: array
+          items: { type: string }
